@@ -1,0 +1,81 @@
+:root{
+    --base: #0000ff;
+}
+
+.round {
+    
+    border: none;
+    width: 6rem;
+    height: 6rem;
+}
+
+.round1 {
+    border-radius: 300px;
+    border: none;
+    width: 7rem;
+    height: 7rem;
+    background-color: var(--base);
+    text-align: center;
+}
+
+.row {
+    margin: 0.5rem;
+}
+
+form {
+    border-radius: 30px;
+    border: 1px solid black;
+}
+
+span {
+    font-style: italic;
+    font-size: smaller;
+}
+
+label {
+    display: block;
+    /* width: 6rem; */
+    text-align: center;
+    word-break: break-all;
+}
+
+.invis{
+    opacity: 0.001;
+}
+
+
+@media screen and (max-width: 992px) {
+    .round1 {
+    width: 5rem;
+    height: 5rem;
+}
+.round {
+    width: 5rem;
+    height: 5rem;
+}
+}
+
+@media screen and (max-width: 768px) {
+    .round1 {
+    width: 3rem;
+    height: 3rem;
+}
+.round {
+
+    border: none;
+    width: 3rem;
+    height: 3rem;
+}
+}
+@media screen and (max-width: 526px) {
+    .round1 {
+    width: 2.5rem;
+    height: 2.5rem;
+}
+.round {
+
+    border: none;
+    width: 2.5rem;
+    height: 2.5rem;
+}
+}
