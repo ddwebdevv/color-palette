@@ -129,7 +129,7 @@ function colorizeAll(e){
 
 //link home
 function returnHome() {
-    window.location = 'home.html';
+    window.location = 'https://ddwebdevv.github.io/portfolio/';
 }
 
 
