@@ -2,7 +2,9 @@ const mPart = document.querySelector('#countColors');
 const shSelect = document.querySelector('#numShades');
 const colSelect = document.querySelector('#numColors');
 let inputArr = []; //for input color array
-let array = []; //to convert inputArr to regular array so we can use forEach etc
+let array = []; 
+let current = []; //array of inputs which we will change colors depending on settings
+
 
 //creating palette elements
 function generate() {
@@ -18,122 +20,68 @@ function generate() {
             <label  class="mt-1 col-form-label clab">rgb(0, 0, 255)</label>
         </div>`; 
         };
-        htmlP +='</div>';       
-
+        htmlP +='</div>';     
     }
     mPart.innerHTML = htmlP;    
     inputArr = document.querySelectorAll('input[type=color]');
-    array = Array.from(inputArr); 
-    colorizeInit();    
+    array = Array.from(inputArr);   //to convert inputArr to regular array so we can use forEach etc
+    inputArr.forEach( input => {
+        input.addEventListener('click', colorizeInit);
+    });        
 }
 
-//getting settings for what elemets user want to change
-//activating on generate button click and changes in chexboxes
-function colorizeInit(){
-    if (document.querySelector('#sameColorChild').checked && !document.querySelector('#sameColorParent').checked)  {
-        inputArr.forEach(input => { 
-            input.removeEventListener('change', colorizeAllparent);
-            input.removeEventListener('input', colorizeAllparent);
-            input.removeEventListener('change', colorizeAll);
-            input.removeEventListener('input', colorizeAll);
-            input.removeEventListener('change', colorizeSingle);
-            input.removeEventListener('input', colorizeSingle);
-            input.addEventListener('change', colorizeAllchild);
-            input.addEventListener('input', colorizeAllchild);
+  // when click on input - going to put items in current array depending on settings
+function colorizeInit(e){
+    current.forEach(input => {
+        input.removeEventListener('change', colorize);
+        input.removeEventListener('input', colorize);
+    });    
+    if (document.querySelector('#sameColorRight').checked && document.querySelector('#sameColorLeft').checked) {
+        current = array.filter( (input) => {
+            if (input.dataset.colorn === e.target.dataset.colorn) {
+                return true;
+            }
         });
-    } else if (document.querySelector('#sameColorChild').checked && document.querySelector('#sameColorParent').checked) {
-        inputArr.forEach(input => {             
-            input.removeEventListener('change', colorizeAllparent);
-            input.removeEventListener('input', colorizeAllparent);
-            input.removeEventListener('change', colorizeAllchild);
-            input.removeEventListener('input', colorizeAllchild);
-            input.removeEventListener('change', colorizeSingle);
-            input.removeEventListener('input', colorizeSingle);
-            input.addEventListener('change', colorizeAll);
-            input.addEventListener('input', colorizeAll);
+    } else if  (document.querySelector('#sameColorRight').checked)  {
+        current = array.filter( (input) => {
+            if (input.dataset.colorn === e.target.dataset.colorn && input.dataset.indexn >= e.target.dataset.indexn) {
+                return true;
+            }
+        }); 
+    } else if (document.querySelector('#sameColorLeft').checked){
+        current = array.filter( (input) => {
+            if (input.dataset.colorn === e.target.dataset.colorn && input.dataset.indexn <= e.target.dataset.indexn) {
+                return true;
+            }
         });
-    } else if (!document.querySelector('#sameColorChild').checked && document.querySelector('#sameColorParent').checked){
-        inputArr.forEach(input => {             
-            input.removeEventListener('change', colorizeAll);
-            input.removeEventListener('input', colorizeAll);
-            input.removeEventListener('change', colorizeAllchild);
-            input.removeEventListener('input', colorizeAllchild);
-            input.removeEventListener('change', colorizeSingle);
-            input.removeEventListener('input', colorizeSingle);
-            input.addEventListener('change', colorizeAllparent);
-            input.addEventListener('input', colorizeAllparent);
-        });
-    }else if (!document.querySelector('#sameColorChild').checked && !document.querySelector('#sameColorParent').checked) {
-        inputArr.forEach(input => {             
-            input.removeEventListener('change', colorizeAllparent);
-            input.removeEventListener('input', colorizeAllparent);
-            input.removeEventListener('change', colorizeAllchild);
-            input.removeEventListener('input', colorizeAllchild);
-            input.removeEventListener('change', colorizeAll);
-            input.removeEventListener('input', colorizeAll);
-            input.addEventListener('change', colorizeSingle);
-            input.addEventListener('input', colorizeSingle);
+    }else {
+        current = array.filter( (input) => {   //need to use it here because I want to work with regular array so I can use forEach on it
+            if (input.dataset.colorn === e.target.dataset.colorn && input.dataset.indexn === e.target.dataset.indexn) {
+                return true;
+            }
         });
     }
-}
 
-//change color of single element
-function colorizeSingle(e){
-    colorize(e.target, e.target.value);
+    current.forEach(input => {
+        input.addEventListener('change', colorize);
+        input.addEventListener('input', colorize);
+    }); 
 }
 
 //main function for changin colors of input color, div, and text in labels
-function colorize(target, color) {
-    target.value = color;//need to change color of other inputs color
-    target.parentNode.style.backgroundColor = color;
-    target.parentNode.nextElementSibling.innerText = color;
-    target.parentNode.nextElementSibling.nextElementSibling.innerText = target.parentNode.style.backgroundColor;
-  
-}
-
-//change color of all elements to the right
-function colorizeAllchild(e){  
-    const current = array.filter( (input) => {
-        if (input.dataset.colorn === e.target.dataset.colorn && input.dataset.indexn >= e.target.dataset.indexn) {
-            return true;
-        }
-    });    
-    current.forEach(item => {
-        colorize(item, e.target.value);
-    });
-}
-
-//change color of all elements to the left
-function colorizeAllparent(e){
-    const current = array.filter( (input) => {
-        if (input.dataset.colorn === e.target.dataset.colorn && input.dataset.indexn <= e.target.dataset.indexn) {
-            return true;
-        }
-    });    
-    current.forEach(item => {
-        colorize(item, e.target.value);
-    });
-}
-
-//change color of all elements in the row
-function colorizeAll(e){ 
-    const current = array.filter( (input) => {
-        if (input.dataset.colorn === e.target.dataset.colorn) {
-            return true;
-        }
-    });    
-    current.forEach(item => {
-        colorize(item, e.target.value);
-    });
-}
+function colorize(e) {
+    current.forEach(input => {   
+        input.value = e.target.value;//need to change color of other inputs color
+        input.parentNode.style.backgroundColor = e.target.value;
+        input.parentNode.nextElementSibling.innerText = e.target.value;
+        input.parentNode.nextElementSibling.nextElementSibling.innerText = input.parentNode.style.backgroundColor;
+    }); 
+}   
 
 //link home
 function returnHome() {
-    window.location = 'https://ddwebdevv.github.io/portfolio/';
+    window.location = 'home.html';
 }
 
-
 document.querySelector('#goback').addEventListener('click', returnHome)
-document.querySelector('#sameColorParent').addEventListener('change', colorizeInit);
-document.querySelector('#sameColorChild').addEventListener('change', colorizeInit);
 document.querySelector('#generate').addEventListener('click', generate);
